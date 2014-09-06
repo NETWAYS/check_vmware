@@ -1,9 +1,9 @@
-name: 
+name: check_vmware
 description: "file:///README.md"
 url: "https://www.netways.org/projects/plugins"
 tags: ~
-vendor: Netways
-target: Temperature
+vendor: VMware,NETWAYS
+target: ESX
 type: Plugin
 license: gplv2
 releases: 
@@ -12,8 +12,8 @@ releases:
     description: "1.0 Release"
     files: 
       - 
-        name: check_vmware.pl
-        url: "file:///check_vmware.pl"
+        name: check_vmware
+        url: "file:///check_vmware"
         description: none
-        checksum: 
+        checksum: 0196312e67661bc61c8db88927092a93
 
