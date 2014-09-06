@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# (c) Schuster Martin, NETWAYS GmbH, 09/2008
+#
+# check for vmware server 2.0
+#
+
+print_help() {
+        echo ""
+        echo "Usage: check_vmware <virtual_machine>"
+        echo ""
+        echo "This plugin checks the status of a virtual machine."
+	echo "  powerState="***" "
+	echo "  name="***" "
+	echo "  memorySizeMB=** "
+	echo "  overallCpuUsage=** "
+	echo "  guestMemoryUsage=** "
+	echo "  overallStatus="***" "
+        echo ""
+        exit 0
+}
+
+case "$1" in
+        --help)
+	        print_help
+                exit $STATE_OK
+        	;;
+
+	*)
+esac
+
+VM=$1
+
+if [ "$VM" == "" ] ; then
+        echo $0 Name der VM angeben
+	print_help        
+	exit 3
+fi
+
+VMSTAFF=`vmware-vim-cmd vmsvc/getallvms | grep $VM | awk '{print $2}'` 
+
+if [ "$VMSTAFF" == "" ] ; then
+	echo VM not exist
+	exit 3
+fi
+
+VMID=`vmware-vim-cmd vmsvc/getallvms | grep $VMSTAFF | awk '{print $1}'`
+#echo "$VMSTAFF $VMID"
+
+
+STATUS=`vmware-vim-cmd vmsvc/get.summary $VMID | egrep "name|overallCpuUsage|memorySizeMB|guestMemoryUsage|powerState|overallStatus" | sed -e 's/\s//g' | sed -e 's/,$//'`
+#echo "$STATUS"
+
+STATUSON=`vmware-vim-cmd vmsvc/get.summary $VMID | egrep "name|overallCpuUsage|memorySizeMB|guestMemoryUsage|powerState|overallStatus" | sed -e 's/\s//g' | grep powerState | cut -c 13-21` 
+#echo "$STATUSON"
+
+
+if [ $STATUSON == 'poweredOn' ] ; then
+        echo "$STATUS"
+        OUT_CODE=0;
+else
+        echo "VM $VMSTAFF is offline"
+        OUT_CODE=1;
+fi
+
+exit $OUT_CODE;
